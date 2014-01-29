@@ -7,45 +7,43 @@
 //
 
 #import "DetailViewController.h"
+#import "Friend.h"
+#import "Comment.h"
 
-@interface DetailViewController ()
-- (void)configureView;
+@interface DetailViewController () <UITextFieldDelegate>
+{
+    __weak IBOutlet UILabel *detailName;
+    __weak IBOutlet UILabel *detailNumFeet;
+    __weak IBOutlet UILabel *detailShoeSize;
+    __weak IBOutlet UITextField *URLTextField;
+    Friend *friend;
+}
+
 @end
 
 @implementation DetailViewController
 
-#pragma mark - Managing the detail item
-
-- (void)setDetailItem:(id)newDetailItem
-{
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
-        
-        // Update the view.
-        [self configureView];
-    }
-}
-
-- (void)configureView
-{
-    // Update the user interface for the detail item.
-
-    if (self.detailItem) {
-        self.detailDescriptionLabel.text = [[self.detailItem valueForKey:@"timeStamp"] description];
-    }
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
+    detailName.text = friend.name;
+    detailNumFeet.text = friend.numFeet.description;
+    detailShoeSize.text = friend.shoeSize.description;
+    URLTextField.delegate = self;
 }
 
-- (void)didReceiveMemoryWarning
+-(void)setDetailItem:(Friend*)detailFriend
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    friend = detailFriend;
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    NSData *imageData = UIImagePNGRepresentation([UIImage imageWithData:[[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:URLTextField.text]]]);
+    [friend.managedObjectContext setValue:imageData forKey:@"image"];
+    [URLTextField resignFirstResponder];
+    NSLog(@"%@", imageData);
+    return YES;
 }
 
 @end
